@@ -1,0 +1,1051 @@
+- Code that specifies when an alarm clock should start making audible sounds.
+
+Link:
+https://github.com/gopals19/Alarm-Clock/blob/master/alarm%20clock.py 
+Which line from which files:
+Lines 2-24 of file alarmclock.py 
+
+  from playsound import playsound
+
+  alarm_time = input("Enter the time of alarm to be set:HH:MM:SS\n")
+
+  alarm_hour=alarm_time[0:2]
+  alarm_minute=alarm_time[3:5]
+  alarm_seconds=alarm_time[6:8]
+  alarm_period = alarm_time[9:11].upper()
+
+  print("Setting up alarm..")
+
+  while True:
+      now = datetime.now()
+      current_hour = now.strftime("%I")
+      current_minute = now.strftime("%M")
+      current_seconds = now.strftime("%S")
+      current_period = now.strftime("%p")
+     if(alarm_period==current_period):
+          if(alarm_hour==current_hour):
+              if(alarm_minute==current_minute):
+                  if(alarm_seconds==current_seconds):
+                      print("Wake Up!")
+                      playsound("music.mp3")
+Why?
+The code makes it so that when the conditions are true (when it is at the time specified in lines 6-9 of the original file), the sound will play. Thus, the alarm will sound only when those conditions are present. 
+
+- Code for a rocket targeting system.
+
+Link:
+https://github.com/123nadeem/Smart-Rocket-System/blob/main/main.py
+
+Which line from which files:
+All lines from main.py file:
+
+import sys
+import pygame
+# import time
+import numpy as np
+import random
+import math
+# import time
+# from scipy.ndimage.interpolation import rotate
+from utils import mapRange
+from functools import reduce
+
+# screen
+WIDTH, HEIGHT = (1200, 800)
+TARGET = np.array([WIDTH / 2, 300  + HEIGHT / 2])
+LIFESPAN = 1200
+
+# Color
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+WHITE = (255, 255, 255)
+
+# MAX_DIST = 0
+
+class Population(object):
+    """ Creates a array of Rockets and Performs Functions as a whole"""
+    def __init__(self):
+
+        self.rockets = [] # Array to store rocket objects
+        self.pop_max = 25  # Maximum Population size
+
+        self.mating_pool = [] # to store copies of rocket objects for selection
+
+        # Creates given amount of objects and stores it in an array
+        for _ in range(self.pop_max):
+            self.rockets.append(Rocket())
+
+    def run(self, win, counter):
+        """ Updates our Population object params and shows it on screen """
+        for i in range(self.pop_max):
+            self.rockets[i].update(win, counter)
+
+    def evaluate(self):
+        """ Evalutes our Population based on some fitness value and creates a mating poll based on them """
+        max_fitness = 0
+        sum_fitness = 0
+
+        for i in range(self.pop_max):
+            self.rockets[i].calcfitness()
+            if self.rockets[i].fitness > max_fitness:
+                max_fitness = self.rockets[i].fitness
+                sum_fitness += self.rockets[i].fitness
+
+        # print("Max_fitness: ", max_fitness)
+        # THe more close to 1 the better
+        print("Average Fitness: ", sum_fitness / max_fitness)
+
+        for i in range(self.pop_max):
+            self.rockets[i].fitness /= max_fitness
+
+        # Empties the mating pool before putting new population in it
+        self.mating_pool = []
+
+        for i in range(self.pop_max):
+            n = math.floor(self.rockets[i].fitness * 100)
+            for _ in range(n):
+                self.mating_pool.append(self.rockets[i])
+        print("Mating Pool: ", len(self.mating_pool))
+
+    def natural_selection(self):
+        """ Selects two fit members of Population and performs crossover and mutation on them,
+            then makes the new population based on the new created member """
+        new_rockets = []
+        for _ in range(len(self.rockets)):
+            parentA = np.random.choice(self.mating_pool).dna
+            parentB = np.random.choice(self.mating_pool).dna
+            child = parentA.crossover(parentB)
+            child.mutation()
+            new_rockets.append(Rocket(child))
+        self.rockets = new_rockets
+
+
+class DNA(object):
+    def __init__(self, genes=[], num_thrusters=1):
+        self.mag = 0.1  # Force scaling factor
+        self.num_thrusters = num_thrusters
+
+        # If genes is not provided initializes a random value for it, otherwise takes it as a param
+        if genes != []:
+            self.genes = genes
+        else:
+            # to minimize the starting force vectors to small values
+            self.genes = np.random.rand(LIFESPAN, self.num_thrusters) * self.mag
+
+    def crossover(self, partner):
+        """ Combines two members and makes an offspring of both """
+        newgenes = np.zeros((len(self.genes), 4))
+
+        mid = np.random.randint(len(self.genes))
+        for i in range(len(self.genes)):
+            if i > mid:
+                newgenes[i] = self.genes[i]
+            else:
+                newgenes[i] = partner.genes[i]
+
+        # to minimize the new force vectors to small values
+        # newgenes = newgenes * self.mag
+
+        return DNA(newgenes, self.num_thrusters)
+
+    def mutation(self):
+        """ Random Chance of the new member having different properties than the parents """
+        for i in range(len(self.genes)):
+            # if random number less than 0.01, new gene is then random vector
+            if random.random() < 0.01:
+
+                mutated_gene = np.random.randn(self.num_thrusters)
+                self.genes[i] = mutated_gene
+
+
+class Rocket():
+    count = 0
+
+    def __init__(self, dna=None, theta=30):
+        # Accelartion, Velocity and Position Vectors
+        self.acc = np.zeros((1, 2))[0]  # Starting Accwlartion
+        self.vel = np.zeros((1, 2))[0]  # Starting velocity
+
+        self.rocket_width = 30
+        self.rocket_height = 30
+
+
+Why?
+Although I am not sure what specificially helps the rocket hit its target, I know that this is a genetic algorithm, meaning that the rockets that hit closest to the target (as measured by the fitness function) are the ones that "reproduce" so that the new "child" rockets will come closer and closer to the target, increasing accuracy.
+- File compression utility algorithm.
+
+Link:
+https://github.com/ArijitKD/Swiftpak/blob/main/swiftpak.py 
+
+Which line from which files:
+
+Lines 32-36 from file swiftpak.py
+
+                def ok_button_pressed():
+                    compressed_file = selected_file.lower().replace(".png", "")+str(time.time())+".jpeg"
+                    imgc.compress_png_to_jpeg(source_png_image=selected_file, compressed_jpeg_image=compressed_file, jpeg_quality=100-compress_window_slider_intvar.get())
+                    compress_window.destroy()
+                    mbox.showinfo(title="Information", message="File compressed successfully: "+compressed_file)
+
+Why?
+The compress_file command in line 33 compresses the file so that it takes up less space on the computer
+
+- Weather forecasting algorithm.
+
+Link: https://github.com/KennedyASmith/WeatherForecasting/blob/master/weather.py 
+
+Which line from which files:
+Lines 105-3:15 from file weather.py
+
+
+    print("Next, we have to account for the current weather state at your location:")
+    if current_weather_state == 'Clear':
+        average_temperature_change += 0.0
+        print("The current weather state is Clear. This weather state will likely have no effect on the temperature tomorrow.")
+    elif current_weather_state == 'Cloudy':
+        average_temperature_change -= 0.2
+        print("The current weather state is Cloudy, which will decrease the temperature very slightly.")
+    elif current_weather_state == 'Rainy':
+        average_temperature_change -= 0.5
+        print("The current weather state is Rainy, which will decrease the temperature tomorrow slightly.")
+    elif current_weather_state == 'Snowy':
+        average_temperature_change -= 1.0
+        print("The current weather state is Snowy, which will decrease the temperature tomorrow.")
+
+    final_prediction = current_temp + average_temperature_change
+    print(f"Therefore, the final predicted temperature is {final_prediction:.2f}°C.")
+    return final_prediction
+
+def get_elevation(lat, lon):
+    with open(ELEVATION_FILE, newline='') as f:
+        reader = csv.reader(f)
+        next(reader)  # skip header row
+        for row in reader:
+            if row[0] == f'{lat},{lon}':
+                return float(row[1])
+    # If no matching row was found, return None
+    return None
+
+def choose_weather(current_weather, elevation, temperature):
+    # Initialize weather choices
+    weather_choices = ['Clear', 'Cloudy', 'Rainy', 'Snowy']
+    
+    # Set default probability of each weather type
+    clear_prob = 0.6
+    cloudy_prob = 0.25
+    rainy_prob = 0.1
+    snowy_prob = 0.05
+    
+    # Adjust probabilities based on current weather
+    if current_weather == 'Clear':
+        cloudy_prob += 0.1
+        rainy_prob += 0.05
+        snowy_prob += 0.025
+    elif current_weather == 'Cloudy':
+        clear_prob += 0.04
+        rainy_prob += 0.05
+        snowy_prob += 0.05
+    elif current_weather == 'Rainy':
+        clear_prob += 0.025
+        cloudy_prob += 0.05
+        snowy_prob += 0.025
+        rainy_prob += 0.025
+    elif current_weather == 'Snowy':
+        clear_prob += 0.01
+        cloudy_prob += 0.025
+        rainy_prob += 0.05
+        snowy_prob += 0.1
+    
+    # Adjust probabilities based on elevation
+    if elevation > 2000:
+        snowy_prob += 0.1
+        rainy_prob += 0.05
+        clear_prob -= 0.05
+        explanation = "The elevation is high, which increases the likelihood of snow and decreases the likelihood of clear weather."
+    elif elevation > 1000:
+        snowy_prob += 0.05
+        rainy_prob += 0.025
+        clear_prob -= 0.025
+        explanation = "The elevation is moderate, which increases the likelihood of snow and decreases the likelihood of clear weather."
+    else:
+        explanation = "The elevation is low, so the weather is not affected much by it."
+    
+    # Adjust probabilities based on temperature
+    if temperature < 0:
+        snowy_prob += 0.1
+        rainy_prob = 0.0
+        clear_prob -= 0.05
+        explanation += " The temperature is below freezing, so there is a high chance of snow and no chance of rain."
+    elif temperature > 0:
+        snowy_prob = 0.0
+        explanation += " The temperature is above freezing, so there is no chance of snow."
+    elif temperature < 10:
+        rainy_prob += 0.025
+        clear_prob -= 0.025
+        explanation += " The temperature is cool, which increases the likelihood of rain and decreases the likelihood of clear weather."
+    else:
+        explanation += " The temperature is mild, so the weather is not affected much by it."
+    
+    # Choose the next day's weather
+    weather_probs = [clear_prob, cloudy_prob, rainy_prob, snowy_prob]
+    chosen_weather = random.choices(weather_choices, weights=weather_probs)[0]
+    
+    explanation += f" The predicted weather for tomorrow is {chosen_weather}."
+    print(explanation)
+    return chosen_weather
+
+def get_coordinates(zip_code):
+    # Open the CSV file
+    with open(ZIP_CODE_FILE, newline='') as csvfile:
+        # Create a CSV reader
+        reader = csv.DictReader(csvfile)
+        
+        # Loop through each row in the CSV file
+        for row in reader:
+            # If the zip code in the current row matches the query zip code
+            if row["ZIP"] == zip_code:
+                # Extract the latitude and longitude from the row
+                latitude = row["LAT"]
+                longitude = row["LNG"]
+                return latitude, longitude
+    return "Invalid Zip", "Invalid Zip"
+
+
+def main():
+    # Get the current system date and format it as yyyy-mm-dd
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    # Use the default theme
+    sg.theme('Default 1')
+
+    # Set up GUI layout
+    layout = [
+        [sg.Text('Enter current temperature (Celcius):'), sg.Input(key='current_temp')],
+        [sg.Text('Enter your zip code:'), sg.Input(key='zip_c')],
+        [sg.Text('Select current weather state:'), sg.Combo(['Clear', 'Cloudy', 'Rainy', 'Snowy'], key='current_weather', default_value='Clear')],
+        [sg.Text('Select current day:'), sg.Text(current_date, key='c_day'),
+        sg.In(key='date_selected', enable_events=True, visible=False, default_text=current_date), 
+        sg.CalendarButton('Select', target='date_selected', format='%Y-%m-%d', key='current_day')],
+        [sg.Button('Predict')],
+        [sg.Table(values=[], headings=['Date', 'Temperature', 'Weather'], auto_size_columns=False, num_rows=7, key='temp_table')],
+        [(sg.Text('Latitude: '), sg.Text('---', key='lat')), (sg.Text('Longitude: '), sg.Text('---', key='long'))]
+    ]
+    window = sg.Window('Temperature Forecast', layout)
+    
+    while True:
+        event, values = window.read()
+
+        if event == sg.WINDOW_CLOSED:
+            break
+
+        if event == 'date_selected':
+            selected_date = values['date_selected']
+            window['c_day'].update(f'{selected_date}')  # Update the text next to the calendar button with the selected date
+            window.Refresh()  # Force the window to update
+            continue;
+
+        if event == 'Predict':
+            current_temp = values['current_temp']
+            if current_temp == '':
+                # If the user hasn't entered a temperature, display an error message
+                sg.popup('Please enter a temperature', title='Error')
+                continue
+            current_temp = float(current_temp)
+            current_zip = values['zip_c']
+            latitude, longitude = get_coordinates(current_zip)
+            if current_zip == '':
+                # If the user hasn't entered a temperature, display an error message
+                sg.popup('Please enter a zip code.', title='Error')
+                continue
+            if latitude == 'Invalid Zip':
+                # If the user hasn't entered a temperature, display an error message
+                sg.popup('Please enter a valid zip code.', title='Error')
+                continue
+
+            current_day = values['date_selected']
+            if current_day == '':
+                # If the user hasn't selected a date, display an error message
+                sg.popup('Please select a date', title='Error')
+                continue
+
+            current_weather = values['current_weather']
+
+            window['lat'].update(values)
+            window['lat'].update(f'{latitude}')
+            window['long'].update(f'{longitude}')
+
+            # Clear any existing data in the table
+            table_data = [['', '', ''] for _ in range(7)]
+            window['temp_table'].update(values=table_data)
+
+            date_object = datetime.strptime(current_day, '%Y-%m-%d')
+            # Loop over the next 6 days and predict the temperature
+            for i in range(1, 7):
+
+                # Calculate the date for the current iteration
+                date = (date_object + timedelta(days=i))
+                date_string = date.strftime('%m-%d')
+
+                print (f"\n\n\n --------- Forecast for Day: {date_string} ---------")
+
+                # Predict the temperature for the current date
+                temperature = predict_temperature(latitude, longitude, current_temp, date_string, current_weather)
+                elevation = get_elevation(latitude, longitude)
+                print("For tomorrow's potential weather patterns: ")
+                current_weather = choose_weather(current_weather, elevation, current_temp)
+                current_temp = temperature
+
+                # Add the date and temperature to the table data
+                table_data[i - 1][0] = date.strftime('%Y-%m-%d')
+                table_data[i - 1][1] = f'{temperature:.2f}°'
+                table_data[i - 1][2] = f'{current_weather}°'
+            
+            window['temp_table'].update
+            window['temp_table'].update(values=table_data)
+            #table_data = [[date.strftime('%Y-%m-%d'), str(temp) + '°'] for date, temp in temp_predictions]
+            #window['temp_table'].update(values=table_data)]
+            
+    window.close()
+
+if __name__ == '__main__':
+    main()
+
+Why?
+The if functions take into account the current weather and predict how that will affect the temperature based on given probabilities. It takes into account elevation, cloudiness, snow, rain, and temperature to predict tomorrow's weather.
+
+- E-commerce checkout system process.
+
+Link:
+https://github.com/ArnavChawla/Shopify-Bot/blob/master/shopifytask.py 
+
+Which line from which files:
+
+Lines 12-202 from file shopifytask.py
+
+class shopifytask():
+    def __init__(self,profilename,size,keyword,siteUrl):
+        #print("here")
+        self.status = "waiting for start"
+        self.loadprofile(profilename)
+        self.siteUrl = siteUrl
+        self.taskKeys = keyword
+        self.keywords = []
+        a= keyword.split(",")
+        for word in a:
+            self.keywords.append(word)
+        print(self.keywords)
+        self.random = False
+        self.shipping = True
+        if(size != "random"):
+            self.size = size
+        else:
+            self.random = True
+            self.size = "random"
+        self.session=requests.session()
+    def loadprofile(self,profilename):
+        a = open(os.getcwd()+"/profiles/"+profilename+".json")
+        x = json.load(a)
+        self.city = x["city"]
+        self.last = x["last"]
+        self.zip = x["Zip"]
+        self.phone = x["phone"]
+        self.cvv = x["cvv"]
+        self.credit=x["credit"]
+        self.state=x["state"]
+        self.exp = x["exp"]
+        self.address = x["address"]
+        self.email = x["email"]
+        self.first = x["First"]
+        self.month = x["exp"].split('/')[0]
+        self.year = x["exp"].split('/')[1]
+    def preloadPayment(self):
+        link = "https://elb.deposit.shopifycs.com/sessions"
+        payload = {
+            "credit_card": {
+                "number": self.credit,
+                "name": self.first + " " + self.last,
+                "month": self.month,
+                "year": self.year,
+                "verification_value": self.cvv
+            }
+        }
+        r = requests.post(link, json=payload, verify=False)
+        self.payment_token = json.loads(r.text)["id"]
+    def getProducts(self):
+        r = self.session.get(self.siteUrl+"/products.json")
+        jso = json.loads(r.text)
+        jso = jso["products"]
+        return jso
+    def keywordSearch(self,products):
+        for product in products:
+            count = 0
+            title = product["title"]
+            #print(title)
+            for key in self.keywords:
+                if(key.lower() in title.lower()):
+                    count += 1
+            if(count == len(self.keywords)):
+                self.taskKeys=title
+                return product
+
+    def findSize(self,product):
+        for variant in product["variants"]:
+            if(variant["requires_shipping"] == False):
+                self.shipping = False
+            if(self.random):
+                variants = []
+                for variant in product["variants"]:
+                    print(variant)
+                    variants.append(size(variant["id"],variant["title"]))
+                variant = random.choice(variants)
+                strv = variant.variant
+                self.size = variant.sizes
+                print("Shipping = " + str(self.shipping))
+                return strv
+            elif(self.size in variant["title"]):
+                variant = str(variant["id"])
+                #print(variant)
+                print("Shipping = " + str(self.shipping))
+                return variant
+    def atc(self,productID):
+        r = self.session.get(self.siteUrl+"/cart/add.js?id="+str(productID))
+        r = self.session.get(self.siteUrl+"/checkout")
+        self.checkoutUrl = r.url
+        return  r.url
+    def first_page(self):
+        payload = {
+        "utf8": u"\u2713",
+        "_method": "patch",
+        "authenticity_token": "",
+        "previous_step": "contact_information",
+        "step": "shipping_method",
+        "checkout[email]": self.email,
+        "checkout[buyer_accepts_marketing]": "0",
+        "checkout[shipping_address][first_name]": self.first,
+        "checkout[shipping_address][last_name]": self.last,
+        "checkout[shipping_address][company]": "",
+        "checkout[shipping_address][address1]": self.address,
+        "checkout[shipping_address][address2]": "",
+        "checkout[shipping_address][city]": self.city,
+        "checkout[shipping_address][country]": "United States",
+        "checkout[shipping_address][province]": self.state,
+        "checkout[shipping_address][zip]": self.zip,
+        "checkout[shipping_address][phone]": self.phone,
+        "checkout[remember_me]": "0",
+        "checkout[client_details][browser_width]": "1710",
+        "checkout[client_details][browser_height]": "1289",
+        "checkout[client_details][javascript_enabled]": "1",
+        "button": ""
+        }
+        self.session.post(self.checkoutUrl,data=payload)
+    def get_shipping(self):
+        link = self.siteUrl + "//cart/shipping_rates.json?shipping_address[zip]={}&shipping_address[country]={}&shipping_address[province]={}".format(self.zip,"United States",self.state)
+        r = self.session.get(link, verify=False)
+        shipping_options = json.loads(r.text)
+
+        ship_opt = shipping_options["shipping_rates"][0]["name"].replace(' ', "%20")
+        ship_prc = shipping_options["shipping_rates"][0]["price"]
+
+        shipping_option = "shopify-{}-{}".format(ship_opt,ship_prc)
+        self.s = shipping_option
+        #(self.s)
+    def submit_shipping(self):
+        data = {
+            'utf8':u"\u2713",
+            '_method':'patch',
+            'authenticity_token':'',
+            'previous_step':'shipping_method',
+            'step':'payment_method',
+            'checkout[shipping_rate][id]':self.s,
+            'button':'',
+            'checkout[client_details][browser_width]':'891',
+            'checkout[client_details][browser_height]':'803',
+            'checkout[client_details][javascript_enabled]':'1'
+        }
+        print("CHECKOUT: "+self.checkoutUrl)
+        r = self.session.post(self.checkoutUrl,data=data)
+
+    def checkout_gateway(self):
+        r= self.session.get(self.checkoutUrl +"?step=payment_method")
+        bs = soup(r.text, "html.parser")
+        gatewa = bs.find("input", {"checked": "checked"})["value"]
+        #print(gatewa)
+        self.gateway = gatewa
+    def checkout(self):
+        payload = {
+        "utf8": u"\u2713",
+        "_method": "patch",
+        "authenticity_token": "",
+        "previous_step": "payment_method",
+        "step": "",
+        "s": self.payment_token,
+        "checkout[payment_gateway]": self.gateway,
+        "checkout[credit_card][vault]": "false",
+        "checkout[different_billing_address]": "false",
+        "complete": "1",
+        "checkout[client_details][browser_width]": str(random.randint(1000, 2000)),
+        "checkout[client_details][browser_height]": str(random.randint(1000, 2000)),
+        "checkout[client_details][javascript_enabled]": "1",
+        "g-recaptcha-repsonse": "",
+        "button": ""
+        }
+        r = self.session.post(self.checkoutUrl+"?step=payment_method", data=payload)
+        print(r.text)
+        print("done")
+        self.status="checked out"
+    def run(self):
+        self.status= "running"
+        self.preloadPayment()
+        self.atc(self.find_size(self.keywordSearch(self.getProducts())))
+        first = Thread(target=self.first_page)
+        second = Thread(target=self.get_shipping)
+        third = Thread(target=self.checkout_gateway)
+        start = time.time()
+        first.start()
+        if(self.shipping==True):
+            second.start()
+        third.start()
+        first.join()
+        if(self.shipping == True):
+            second.join()
+        third.join()
+        if(self.shipping == True):
+            self.submit_shipping()
+        self.checkout()
+        print(time.time()-start)
+
+Why?
+the getProducts function loads the products onto the site, the keywordSearch function allows for the user to search for the product, and the return product command returns the product as the result of the search. Submit shipping gathers the necessary information for shipping. Then, the checkout_gateway loads the necessary info for checking out and then checkout is what allows the user to input the necessary information. Then it runs so that the checkout goes through.  
+
+- Social media post scheduler.
+
+Link: https://github.com/soheibshb10/CNTIC_SocialMedia_Bot/blob/main/File.py
+
+Which line from which files:
+ 
+Lines 6-26 from file File.py
+
+# File class
+class File:
+    def __init__(
+        self,
+        file_id=None,
+        file_path=None,
+        posting_time=None,
+        option=None,
+        user_id=None,
+        isposted=0,
+    ):
+        self.file_id = file_id
+        self.file_path = file_path
+        self.posting_time = posting_time
+        self.option = option
+        self.user_id = user_id
+        self.isposted = isposted
+        self.db_helper = DatabaseHelper(
+            "cntic_bot.db"
+        )  # Initialize the DatabaseHelper instance
+        self.db_helper.connect()
+
+
+Why?
+
+The class File allows for specifications including posting time, which allows it to "know" when to retrieve the file and post it.
+
+- Fitness app calorie counter.
+
+Link: https://github.com/anuragts/Fitness-app/blob/main/calories/filters.py
+
+Which line from which files:
+
+Lines 1-9 from file filters.py
+
+import django_filters
+from django_filters import CharFilter
+from .models import *
+
+class FoodFilter(django_filters.FilterSet):
+	food_name = CharFilter(field_name = 'name' , lookup_expr = 'icontains',label='search food items')
+	class Meta:
+		model = Food
+		fields = ['food_name']
+
+Why?
+The CharFilter allows for the user to look up a certain food, from which the computer can add the calories associated with that food.
+
+- Online voting system mechanics.
+
+Link: https://github.com/shah-deep/Online-Voting-System/blob/main/VotingPage.py
+
+Which line from which files:
+
+Lines 6-34 from file VotingPage.py
+
+def voteCast(root,frame1,vote,client_socket):
+
+    for widget in frame1.winfo_children():
+        widget.destroy()
+
+    client_socket.send(vote.encode()) #4
+
+    message = client_socket.recv(1024) #Success message
+    print(message.decode()) #5
+    message = message.decode()
+    if(message=="Successful"):
+        Label(frame1, text="Vote Casted Successfully", font=('Helvetica', 18, 'bold')).grid(row = 1, column = 1)
+    else:
+        Label(frame1, text="Vote Cast Failed... \nTry again", font=('Helvetica', 18, 'bold')).grid(row = 1, column = 1)
+
+    client_socket.close()
+
+
+
+def votingPg(root,frame1,client_socket):
+
+    root.title("Cast Vote")
+    for widget in frame1.winfo_children():
+        widget.destroy()
+
+    Label(frame1, text="Cast Vote", font=('Helvetica', 18, 'bold')).grid(row = 0, column = 1, rowspan=1)
+    Label(frame1, text="").grid(row = 1,column = 0)
+
+    vote = StringVar(frame1,"-1")
+
+Why?
+
+The voteCast function allows the user to cast a vote.
+
+- Automated email response system.
+
+Link: https://github.com/shadmanh123/Automated-Email-Response-System/blob/main/parta.py
+
+Which line from which files:
+
+Lines 5-93 from File parta.py
+
+#Ask user for email
+def get_user_email():
+  user_email = input("Enter your Email: ")
+  return(user_email)
+user_email_saved = get_user_email() #Save user email information
+
+#Ask user for message subject
+def get_message_subject():
+  message_subject = input("Enter your Message Subject: ")
+  return(message_subject)
+message_subject_saved = get_message_subject() #Save message subject information
+
+#Ask user for message body
+def get_message_body():
+  message_body = input("Enter your Message Body: ")
+  return(message_body)
+message_body_saved = get_message_body() #Save message body information
+
+#Check which message subject corresponds to message subject input by user
+message_subject_1 = "Problem Saving File"
+
+message_subject_2 = "I Lost My License"
+
+message_subject_3 = "Where is My Program Installed?" 
+
+message_subject_4 = "How Do I Open My Program?"
+
+message_subject_5 = "How Do I Open My File In Microsoft Word?"
+
+message_subject_6 = "Do You Offer Refunds?"
+
+if message_subject_saved == "Problem Saving File" or message_subject_saved == "1" or message_subject_saved.lower() == message_subject_1.lower():
+  message_subject_one = "    Thank you for contacting our company. Saving a file is done by pressing CTRL-S (Windows) or CMD-S (Mac)."
+  message_subject_saved = message_subject_one
+
+elif message_subject_saved == "I Lost My License" or message_subject_saved == "2" or message_subject_saved.lower() == message_subject_2.lower():
+  message_subject_two = "    Thank you for contacting our company. You will be contacted via email to verify your license request."
+  message_subject_saved = message_subject_two
+
+elif message_subject_saved == "Where is My Program Installed?" or message_subject_saved == "3" or message_subject_saved == "How Do I Open My Program?" or message_subject_saved == "4" or message_subject_saved.lower() == message_subject_3.lower() or message_subject_saved.lower() == message_subject_4.lower() :
+  message_subject_three_or_four = "    Thank you for contacting our company. The application is located in the folder: \n                     My Computer > Program Files \n                   Double click on the application to launch and run it."
+  message_subject_saved = message_subject_three_or_four
+
+elif message_subject_saved == "How Do I Open My File In Microsoft Word?" or message_subject_saved == "5" or message_subject_saved.lower() == message_subject_5.lower():
+  message_subject_five = "    Thank you for contacting our company. First export the file in .doc format in our application. Then open the .doc file in Microsoft Word."
+  message_subject_saved = message_subject_five
+
+elif message_subject_saved == "Do You Offer Refunds?" or message_subject_saved == "6" or message_subject_saved.lower() == message_subject_6.lower():
+  message_subject_six = "    Thank you for contacting our company. Sorry, we do not offer refunds."
+  message_subject_saved = message_subject_six
+
+#Look for key phrases in message body to determine response if no message subject is given
+
+key_phrases1 = ["can't save file","saving","save"]
+
+key_phrases2 = ["license", "lost license"]
+
+key_phrases3_or_4 = ["can’t find my program","cannot find my program","can’t find the program","where is the program","can’t open my program","cannot open my program","can't open the program"]
+
+key_phrases5 = ["open in word","open in ms word"]
+
+key_phrases6 = ["refund","have a refund","get a refund","want a refund", "REFUND"]
+
+if message_subject_saved == "":
+  for phrases in key_phrases1:
+    if phrases in message_body_saved:
+      message_subject_one = "    Thank you for contacting our company. Saving a file ic)."
+      message_subject_saved = message_subject_one
+
+  for phrases in key_phrases2:
+    if phrases in message_body_saved:
+      message_subject_two = "    Thank you for contacting our company. You will be contacted via email to verify your license request."
+      message_subject_saved = message_subject_two
+
+  for phrases in key_phrases3_or_4:
+    if phrases in message_body_saved:
+      message_subject_three_or_four = "    Thank you for contacting our company. The application is located in the folder: \n                     My Computer > Program Files \n                   Double click on the application to launch and run it."
+      message_subject_saved = message_subject_three_or_four
+    
+
+  for phrases in key_phrases5:
+    if phrases in message_body_saved:
+      message_subject_five = "    Thank you for contacting our company. First export the file in .doc format in our application. Then open the .doc file in Microsoft Word."
+      message_subject_saved = message_subject_five
+
+  for phrases in key_phrases6:
+    if phrases in message_body_saved:
+      message_subject_six = "    Thank you for contacting our company. Sorry, we do not offer refunds."
+      message_subject_saved = message_subject_six
+
+Why?
+
+This uses the if function to know when to use which responses automatically based on the subject heading.
+
+-Personal observation 1: Calculator 
+
+Link: https://github.com/taapasX28/Calculator_pyqt/blob/master/calculator.py 
+
+Which line from which files:
+
+Lines 245-392 from file calculator.py 
+
+ self.decimal = QtGui.QPushButton(Dialog)
+        self.decimal.setGeometry(QtCore.QRect(150, 290, 61, 51))
+        self.decimal.setObjectName(_fromUtf8("decimal"))
+        self.display = QtGui.QLineEdit(Dialog)
+        self.display.setGeometry(QtCore.QRect(10, 20, 421, 71))
+        self.display.setObjectName(_fromUtf8("display"))
+        self.equal = QtGui.QPushButton(Dialog)
+        self.equal.setGeometry(QtCore.QRect(220, 290, 61, 51))
+        self.equal.setObjectName(_fromUtf8("equal"))
+        self.clear = QtGui.QPushButton(Dialog)
+        self.clear.setGeometry(QtCore.QRect(290, 230, 81, 51))
+        self.clear.setObjectName(_fromUtf8("clear"))
+        self.back = QtGui.QPushButton(Dialog)
+        self.back.setGeometry(QtCore.QRect(290, 170, 81, 51))
+        self.back.setObjectName(_fromUtf8("back"))
+        self.add = QtGui.QPushButton(Dialog)
+        self.add.setGeometry(QtCore.QRect(220, 170, 61, 51))
+        self.add.setObjectName(_fromUtf8("add"))
+        self.substract = QtGui.QPushButton(Dialog)
+        self.substract.setGeometry(QtCore.QRect(220, 230, 61, 51))
+        self.substract.setObjectName(_fromUtf8("substract"))
+        self.divide = QtGui.QPushButton(Dialog)
+        self.divide.setGeometry(QtCore.QRect(290, 290, 81, 51))
+        self.divide.setObjectName(_fromUtf8("divide"))
+        self.multiply = QtGui.QPushButton(Dialog)
+        self.multiply.setGeometry(QtCore.QRect(220, 110, 61, 51))
+        self.multiply.setObjectName(_fromUtf8("multiply"))
+        self.sq_root = QtGui.QPushButton(Dialog)
+        self.sq_root.setGeometry(QtCore.QRect(320, 350, 51, 51))
+        self.sq_root.setObjectName(_fromUtf8("sq_root"))
+        self.sin = QtGui.QPushButton(Dialog)
+        self.sin.setGeometry(QtCore.QRect(10, 350, 51, 51))
+        self.sin.setObjectName(_fromUtf8("sin"))
+        self.cos = QtGui.QPushButton(Dialog)
+        self.cos.setGeometry(QtCore.QRect(70, 350, 51, 51))
+        self.cos.setObjectName(_fromUtf8("cos"))
+        self.tan = QtGui.QPushButton(Dialog)
+        self.tan.setGeometry(QtCore.QRect(130, 350, 51, 51))
+        self.tan.setObjectName(_fromUtf8("tan"))
+        self.power = QtGui.QPushButton(Dialog)
+        self.power.setGeometry(QtCore.QRect(150, 410, 71, 51))
+        self.power.setObjectName(_fromUtf8("power"))
+        self.log = QtGui.QPushButton(Dialog)
+        self.log.setGeometry(QtCore.QRect(250, 350, 61, 51))
+        self.log.setObjectName(_fromUtf8("log"))
+        self.b_open = QtGui.QPushButton(Dialog)
+        self.b_open.setGeometry(QtCore.QRect(10, 410, 61, 51))
+        self.b_open.setObjectName(_fromUtf8("b_open"))
+        self.b_close = QtGui.QPushButton(Dialog)
+        self.b_close.setGeometry(QtCore.QRect(80, 410, 61, 51))
+        self.b_close.setObjectName(_fromUtf8("b_close"))
+        self.ln = QtGui.QPushButton(Dialog)
+        self.ln.setGeometry(QtCore.QRect(190, 350, 51, 51))
+        self.ln.setObjectName(_fromUtf8("ln"))
+        self.e = QtGui.QPushButton(Dialog)
+        self.e.setGeometry(QtCore.QRect(230, 410, 71, 51))
+        self.e.setObjectName(_fromUtf8("e"))
+        self.pi = QtGui.QPushButton(Dialog)
+        self.pi.setGeometry(QtCore.QRect(310, 410, 61, 51))
+        self.pi.setObjectName(_fromUtf8("pi"))
+        self.bco = QtGui.QPushButton(Dialog)
+        self.bco.setGeometry(QtCore.QRect(190, 350, 181, 51))
+        self.bco.setObjectName(_fromUtf8("bco"))
+        self.arg = QtGui.QPushButton(Dialog)
+        self.arg.setGeometry(QtCore.QRect(10, 350, 171, 51))
+        self.arg.setObjectName(_fromUtf8("arg"))
+        self.r1 = QtGui.QRadioButton(Dialog)
+        self.r1.setGeometry(QtCore.QRect(290, 110, 91, 51))
+        self.r1.setObjectName(_fromUtf8("r1"))
+        self.graph = QtGui.QPushButton(Dialog)
+        self.graph.setGeometry(QtCore.QRect(10, 470, 61, 51))
+        self.graph.setObjectName(_fromUtf8("graph"))
+        self.plot = QtGui.QPushButton(Dialog)
+        self.plot.setGeometry(QtCore.QRect(80, 470, 81, 51))
+        self.plot.setObjectName(_fromUtf8("plot"))
+        self.x = QtGui.QPushButton(Dialog)
+        self.x.setGeometry(QtCore.QRect(170, 470, 61, 51))
+        self.x.setObjectName(_fromUtf8("x"))
+        self.cos1 = QtGui.QPushButton(Dialog)
+        self.cos1.setGeometry(QtCore.QRect(380, 170, 51, 51))
+        self.cos1.setObjectName(_fromUtf8("cos1"))
+        self.sin1 = QtGui.QPushButton(Dialog)
+        self.sin1.setGeometry(QtCore.QRect(380, 110, 51, 51))
+        self.sin1.setObjectName(_fromUtf8("sin1"))
+        self.tan1 = QtGui.QPushButton(Dialog)
+        self.tan1.setGeometry(QtCore.QRect(380, 230, 51, 51))
+        self.tan1.setObjectName(_fromUtf8("tan1"))
+        self.fact = QtGui.QPushButton(Dialog)
+        self.fact.setGeometry(QtCore.QRect(380, 290, 51, 51))
+        self.fact.setObjectName(_fromUtf8("fact"))
+        self.comb = QtGui.QPushButton(Dialog)
+        self.comb.setGeometry(QtCore.QRect(380, 350, 51, 51))
+        self.comb.setObjectName(_fromUtf8("comb"))
+        self.perm = QtGui.QPushButton(Dialog)
+        self.perm.setGeometry(QtCore.QRect(380, 410, 51, 51))
+        self.perm.setObjectName(_fromUtf8("perm"))
+        self.com = QtGui.QPushButton(Dialog)
+        self.com.setGeometry(QtCore.QRect(380, 470, 51, 51))
+        self.com.setObjectName(_fromUtf8("com"))
+        self.equ = QtGui.QPushButton(Dialog)
+        self.equ.setGeometry(QtCore.QRect(240, 470, 131, 51))
+        self.equ.setObjectName(_fromUtf8("equ"))
+        self.equ.clicked.connect(self.openWindow)
+        self.graph.raise_()
+        self.plot.raise_()
+        self.x.raise_()
+        self.arg.raise_()
+        self.b1.raise_()
+        self.b3.raise_()
+        self.b2.raise_()
+        self.b6.raise_()
+        self.b5.raise_()
+        self.b4.raise_()
+        self.b9.raise_()
+        self.b8.raise_()
+        self.b7.raise_()
+        self.plus_minus.raise_()
+        self.b0.raise_()
+        self.decimal.raise_()
+        self.display.raise_()
+        self.equal.raise_()
+        self.clear.raise_()
+        self.back.raise_()
+        self.add.raise_()
+        self.substract.raise_()
+        self.divide.raise_()
+        self.multiply.raise_()
+        self.sq_root.raise_()
+        self.sin.raise_()
+        self.cos.raise_()
+        self.tan.raise_()
+        self.power.raise_()
+        self.log.raise_()
+        self.b_open.raise_()
+        self.b_close.raise_()
+        self.ln.raise_()
+        self.e.raise_()
+        self.pi.raise_()
+        self.r1.raise_()
+        self.bco.raise_()
+        self.cos1.raise_()
+        self.sin1.raise_()
+        self.tan1.raise_()
+        self.fact.raise_()
+        self.comb.raise_()
+        self.perm.raise_()
+        self.com.raise_()
+        self.equ.raise_()
+
+
+Why?
+The different mathematical commands respond to different buttons being pressed.
+
+-Personal observation 2: Random number generator (lottery style)
+
+Link: https://github.com/willtheorangeguy/Random-Lotto-Number-Chooser/blob/master/lotto.py
+
+Which line from which files:
+
+Lines 48-73 of file lotto.py
+
+def pick( ) :
+	nums = sample( range( 1, 49 ), 6 )
+	label1.configure( text = nums[0] )
+	label2.configure( text = nums[1] )
+	label3.configure( text = nums[2] )
+	label4.configure( text = nums[3] )
+	label5.configure( text = nums[4] )
+	label6.configure( text = nums[5] )
+	getBtn.configure( state = DISABLED )
+	resBtn.configure( state = NORMAL )
+
+def reset( ) :
+	label1.configure( text = '...' )
+	label2.configure( text = '...' )
+	label3.configure( text = '...' )
+	label4.configure( text = '...' )
+	label5.configure( text = '...' )
+	label6.configure( text = '...' )
+	getBtn.configure( state = NORMAL )
+	resBtn.configure( state = DISABLED )
+
+getBtn.configure( command = pick )
+resBtn.configure( command = reset )
+
+# Sustain window:
+window.mainloop( )
+
+Why?
+The pick function makes it so that the computer will pick randomly from different numbers. Then the reset button will reset it so that the generator can be used again.
+
+-Personal observation 3: Online guitar tuner
+
+Link: https://github.com/qiuxiang/tuner/blob/master/app/tuner.js 
+
+Which line from which files:
+
+Lines 97-117 from file tuner.js 
+
+  aubio().then(function (aubio) {
+    self.pitchDetector = new aubio.Pitch(
+      "default",
+      self.bufferSize,
+      1,
+      self.audioContext.sampleRate
+    );
+    self.startRecord();
+  });
+};
+
+/**
+ * get musical note from frequency
+ *
+ * @param {number} frequency
+ * @returns {number}
+ */
+Tuner.prototype.getNote = function (frequency) {
+  const note = 12 * (Math.log(frequency / this.middleA) / Math.log(2));
+  return Math.round(note) + this.semitone;
+};
+
+Why?
+
+Thhe pitchDetector recognizes the pitch of a note that is played, records that note, and figures out what it is from the frequency with a logarithmic function
